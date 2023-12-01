@@ -20,7 +20,7 @@ fn main() {
     println!("Starting calibration ...");
     println!("First: {}", first(&input));
     println!("Adjusting calibration ...");
-    println!("Adjusted: {}", adjusted(&input, &TRANSLATION));
+    println!("Adjusted: {}", second(&input, &TRANSLATION));
 }
 
 fn first(input: &String) -> usize {
@@ -35,7 +35,7 @@ fn first(input: &String) -> usize {
         .sum()
 }
 
-fn adjust_input(mut input: &str, translations: &[(&str, &str); 9]) -> String {
+fn second(mut input: &str, translations: &[(&str, &str); 9]) -> usize {
     let mut result = String::new();
     'outer: while !input.is_empty() {
         for (key, value) in translations {
@@ -48,11 +48,7 @@ fn adjust_input(mut input: &str, translations: &[(&str, &str); 9]) -> String {
         result.push_str(&input[0..1]);
         input = &input[1..];
     }
-    result
-}
-
-fn adjusted(input: &String, translations: &[(&str, &str); 9]) -> usize {
-    first(&adjust_input(input, translations))
+    first(&result)
 }
 
 #[cfg(test)]
@@ -67,12 +63,12 @@ mod tests {
 
     #[test]
     fn test2() {
-        assert_eq!(adjusted(&String::from("two1nine"), &TRANSLATION), 29);
-        assert_eq!(adjusted(&String::from("eighttwothree"), &TRANSLATION), 83);
-        assert_eq!(adjusted(&String::from("7pqrstsixteen"), &TRANSLATION), 76);
-        assert_eq!(adjusted(&String::from("xtwone3four"), &TRANSLATION), 24);
+        assert_eq!(second(&String::from("two1nine"), &TRANSLATION), 29);
+        assert_eq!(second(&String::from("eighttwothree"), &TRANSLATION), 83);
+        assert_eq!(second(&String::from("7pqrstsixteen"), &TRANSLATION), 76);
+        assert_eq!(second(&String::from("xtwone3four"), &TRANSLATION), 24);
         assert_eq!(
-            adjusted(
+            second(
                 &String::from(
                     "two1nine
                      eightwothree
