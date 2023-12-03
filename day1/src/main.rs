@@ -20,35 +20,32 @@ fn main() {
     println!("Starting calibration ...");
     println!("First: {}", first(&input));
     println!("Adjusting calibration ...");
-    println!("Adjusted: {}", second(&input, &TRANSLATION));
+    println!("Second: {}", second(&input, &TRANSLATION));
 }
 
-fn first(input: &String) -> usize {
-    input
-        .split_whitespace()
-        .map(|line| {
-            let numbers: Vec<_> = line.chars().filter(|c| c.is_digit(10)).collect();
-            let mut number = numbers.get(0).unwrap().to_string();
-            number.push(*numbers.get(numbers.len() - 1).unwrap());
-            number.parse::<usize>().unwrap()
-        })
-        .sum()
+fn first(input: &str) -> usize {
+    input.split_whitespace().fold(0, |acc, line| {
+        let numbers: Vec<_> = line.chars().filter(|c| c.is_ascii_digit()).collect();
+        let mut number = numbers.first().unwrap().to_string();
+        number.push(*numbers.last().unwrap());
+        acc + number.parse::<usize>().unwrap()
+    })
 }
 
 fn second(mut input: &str, translations: &[(&str, &str); 9]) -> usize {
-    let mut result = String::new();
+    let mut renamed = String::new();
     'outer: while !input.is_empty() {
         for (key, value) in translations {
             if input.starts_with(key) {
-                result.push_str(&value.to_string());
-                input = &input[key.len() - 1..];
+                renamed.push_str(value);
+                input = &input[1..];
                 continue 'outer;
             }
         }
-        result.push_str(&input[0..1]);
+        renamed.push_str(&input[0..1]);
         input = &input[1..];
     }
-    first(&result)
+    first(&renamed)
 }
 
 #[cfg(test)]
@@ -67,6 +64,7 @@ mod tests {
         assert_eq!(second(&String::from("eighttwothree"), &TRANSLATION), 83);
         assert_eq!(second(&String::from("7pqrstsixteen"), &TRANSLATION), 76);
         assert_eq!(second(&String::from("xtwone3four"), &TRANSLATION), 24);
+        assert_eq!(second(&String::from("eightwo"), &TRANSLATION), 82);
         assert_eq!(
             second(
                 &String::from(
