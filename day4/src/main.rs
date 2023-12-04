@@ -9,7 +9,6 @@ use nom::{
 use std::cmp;
 use std::collections::HashSet;
 use std::fs;
-use std::iter;
 use std::str::FromStr;
 
 const INPUT_FILE: &str = "input.sf";
@@ -96,31 +95,21 @@ fn part2(input: &str) -> Option<usize> {
         .map(|card| card.calculate_wins())
         .collect::<Vec<_>>();
 
-    let mut copies = iter::repeat(1).take(repeats.len()).collect::<Vec<_>>();
-    calculate_copies(&repeats, &mut copies, 1);
-    Some(copies.into_iter().sum())
-}
+    let mut copies = vec![1; repeats.len()];
 
-fn calculate_copies(winnings: &Vec<usize>, copies: &mut Vec<usize>, card_id: usize) {
-    if winnings.len() < card_id {
-        return;
-    }
-
-    let wins = *winnings.get(card_id - 1).unwrap_or(&0);
-
-    let times = *copies.get(card_id - 1).unwrap();
-    for id in card_id + 1..=cmp::min(card_id + wins, copies.len()) {
-        let copy = copies.get_mut(id - 1).unwrap();
-        *copy += times;
-    }
-    calculate_copies(winnings, copies, card_id + 1);
+    Some(repeats.into_iter().enumerate().fold(0, |acc, (i, wins)| {
+        for j in i + 1..cmp::min(i + wins + 1, copies.len()) {
+            copies[j] += copies[i];
+        }
+        acc + copies[i]
+    }))
 }
 
 fn main() {
     let input = fs::read_to_string(INPUT_FILE).expect("could not read from file");
 
-    println!("part1: {}", part1(&input).unwrap_or(0));
-    println!("part2: {}", part2(&input).unwrap_or(0));
+    println!("part1: {}", part1(&input).unwrap());
+    println!("part2: {}", part2(&input).unwrap());
 }
 
 #[cfg(test)]
