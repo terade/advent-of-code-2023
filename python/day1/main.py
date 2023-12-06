@@ -3,26 +3,23 @@ DIGITS = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
 
 
 def digit_in_line(line):
-    first = 0
-    last = 0
-    for i in range(0, len(line), 1):
-        if line[i].isdigit():
-            first = ord(line[i]) - ord("0")
+    for c in line:
+        if c.isdigit():
+            first = int(c)
             break
-    for i in range(len(line) - 1, -1, -1):
-        if line[i].isdigit():
-            last = ord(line[i]) - ord("0")
+    for c in reversed(line):
+        if c.isdigit():
+            last = int(c)
             break
     return 10 * first + last
 
 
 def fmt_line(line):
-    list_line = list(line)
-    for i in range(0, len(line), 1):
+    for i, c in enumerate(line):
         for j in range(0, len(DIGITS), 1):
             if line[i : i + len(DIGITS[j])] == DIGITS[j]:
-                list_line[i] = chr(j + 1 + ord("0"))
-    return "".join(list_line)
+                line = line[:i] + str(j + 1) + line[i + 1 :]
+    return line
 
 
 f = open(INPUT_FILE)
@@ -30,3 +27,5 @@ lines = f.readlines()
 
 print("part1:", sum(map(digit_in_line, lines)))
 print("part2:", sum(map(digit_in_line, map(fmt_line, lines))))
+
+f.close()
