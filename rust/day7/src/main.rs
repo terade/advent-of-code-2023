@@ -15,10 +15,10 @@ const JOKER_VALUE: isize = 11; // you cant touch these
 const NEW_JOKER_VALUE: isize = 1;
 
 #[derive(Debug, PartialEq, Eq)]
-struct Rule1 {}
+struct Rule1;
 
 #[derive(Debug, PartialEq, Eq)]
-struct Rule2 {}
+struct Rule2;
 
 trait RuleSet {}
 impl RuleSet for Rule1 {}
@@ -115,16 +115,21 @@ impl<T: RuleSet> Bet<T> {
     }
 }
 
-impl Ord for Bet<Rule1> {
+impl<T: RuleSet + std::cmp::Eq> Ord for Bet<T>
+where
+    Bet<T>: PartialOrd,
+{
     fn cmp(&self, other: &Self) -> Ordering {
         self.partial_cmp(other).unwrap()
     }
 }
 
-impl Ord for Bet<Rule2> {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
-    }
+fn frequency_map(hand: &[isize; 5]) -> HashMap<&isize, usize> {
+    hand.iter()
+        .fold(HashMap::<&isize, usize>::new(), |mut map, val| {
+            *map.entry(val).or_default() += 1;
+            map
+        })
 }
 
 impl PartialOrd for Bet<Rule1> {
@@ -132,12 +137,7 @@ impl PartialOrd for Bet<Rule1> {
         let hands: Vec<Vec<_>> = [self, other]
             .into_iter()
             .map(|bet| {
-                bet.hand
-                    .iter()
-                    .fold(HashMap::<&isize, usize>::new(), |mut map, val| {
-                        *map.entry(val).or_default() += 1;
-                        map
-                    })
+                frequency_map(&bet.hand)
                     .into_values()
                     .collect::<Vec<usize>>()
             })
@@ -177,13 +177,7 @@ impl PartialOrd for Bet<Rule2> {
         let hands: Vec<Vec<_>> = [self.revalue_joker(), other.revalue_joker()]
             .into_iter()
             .map(|bet| {
-                let mut map =
-                    bet.hand
-                        .iter()
-                        .fold(HashMap::<&isize, usize>::new(), |mut map, val| {
-                            *map.entry(val).or_default() += 1;
-                            map
-                        });
+                let mut map = frequency_map(&bet.hand);
                 let joker_frequency: usize = *map.get(&NEW_JOKER_VALUE).unwrap_or(&0);
                 *map.entry(&NEW_JOKER_VALUE).or_default() = 0;
                 let mut max_frequency_card = map
