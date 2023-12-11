@@ -1,8 +1,12 @@
 FMT = black
 FILES = *.py
+LINT = pylint
 
-run: 
+run:
 	python $(FILES)
 
-fmt:
+fmt: lint
 	$(FMT) $(FILES)
+
+lint: 
+	$(LINT) $(FILES)
