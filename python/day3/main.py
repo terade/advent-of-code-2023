@@ -67,11 +67,12 @@ class Engine:
             self.part1 += sum(map(lambda x: x[1], numbers))
             if len(numbers) == 2:
                 self.part2 += numbers[0][1] * numbers[1][1]
+        return (self.part1, self.part2)
 
 
 with open(INPUT_FILE) as file:
     engine = Engine()
     engine.parse(file.read())
-    engine.solve()
-    print("part1:", engine.part1)
-    print("part2:", engine.part2)
+    part1, part2 = engine.solve()
+    print("part1:", part1)
+    print("part2:", part2)
