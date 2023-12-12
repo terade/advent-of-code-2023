@@ -32,12 +32,6 @@ struct Bet<T: RuleSet> {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-struct BetRule2 {
-    hand: [isize; 5],
-    amount: isize,
-}
-
-#[derive(Debug, PartialEq, Eq)]
 struct CamelCards<T: RuleSet> {
     bets: Vec<Bet<T>>,
 }
@@ -181,7 +175,6 @@ impl PartialOrd for Bet<Rule2> {
                 let joker_frequency: usize = *map.get(&NEW_JOKER_VALUE).unwrap_or(&0);
                 *map.entry(&NEW_JOKER_VALUE).or_default() = 0;
                 let mut max_frequency_card = map
-                    .clone()
                     .iter()
                     .map(|(a, b)| (**a, *b))
                     .collect::<Vec<(isize, usize)>>();
