@@ -33,9 +33,12 @@ class Engine:
         if digit:
             self.input_sequence((line_number, begin), (self.part_id, digit))
 
-    def parse(self, string):
+    @classmethod
+    def parse(cls, string):
+        eng = cls()
         for i, line in enumerate(string.splitlines()):
-            self.parse_line(i, line)
+            eng.parse_line(i, line)
+        return eng
 
     def __str__(self):
         return f"part_numbers: {self.part_numbers}\nparts: {self.parts}"
@@ -71,8 +74,7 @@ class Engine:
 
 
 with open(INPUT_FILE) as file:
-    engine = Engine()
-    engine.parse(file.read())
+    engine = Engine.parse(file.read())
     part1, part2 = engine.solve()
     print("part1:", part1)
     print("part2:", part2)
