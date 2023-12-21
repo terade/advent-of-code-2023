@@ -21,7 +21,6 @@ my %tr = (
 my $re = join '|', keys %tr;
 my ( $part1, $part2 ) = 0;
 
-my @test = ( map { [ $_ =~ /\d/g ] } @lines );
 foreach my $line (@lines) {
     my @digits1 = ( $line =~ /\d/g );
     my @digits2 = map { $_ =~ m/\d/ ? $_ : $tr{$_} } ( $line =~ /(?=(\d|$re))/g );
